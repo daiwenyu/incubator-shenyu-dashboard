@@ -1,12 +1,23 @@
 /* eslint-disable react/no-access-state-in-setstate */
 import React, { Component } from "react";
-import { Tabs, Form, Select, Row, Col, Input, Button, Table } from "antd";
+import {
+  Tabs,
+  Form,
+  Select,
+  Row,
+  Col,
+  Input,
+  Button,
+  Table,
+  InputNumber
+} from "antd";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Option } = Select;
 const { TabPane } = Tabs;
 
 const TypeKey = {
+  statusCode: ["statusCode"],
   headers: [
     "addHeaders",
     "setHeaders",
@@ -34,9 +45,10 @@ class ResponseConfig extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeKey: "headers",
+      activeKey: "statusCode",
       headers: [{ id: (+new Date() + 1).toString() }],
-      body: [{ id: (+new Date() + 1).toString() }]
+      body: [{ id: (+new Date() + 1).toString() }],
+      statusCode: [{ id: (+new Date() + 1).toString(), type: "statusCode" }]
     };
   }
 
@@ -52,7 +64,11 @@ class ResponseConfig extends Component {
       }
       const headerData = [];
       const bodyData = [];
+      const statusCodeData = [
+        { id: (+new Date() + 1).toString(), type: "statusCode" }
+      ];
       const draftData = [];
+
       Object.keys(data).forEach(type => {
         if (Array.isArray(data[type])) {
           data[type].forEach(item => {
@@ -62,14 +78,14 @@ class ResponseConfig extends Component {
               draftData.push({ type, ...item });
             }
           });
-        } else {
+        }
+        if (Object.prototype.toString.call(data[type]) === "[object Object]") {
           Object.keys(data[type]).forEach(key => {
-            draftData.push({
-              type,
-              key,
-              value: data[type][key]
-            });
+            draftData.push({ type, key, value: data[type][key] });
           });
+        }
+        if (typeof data[type] === "number") {
+          statusCodeData[0].code = data[type];
         }
       });
       draftData.forEach((item, i) => {
@@ -85,7 +101,8 @@ class ResponseConfig extends Component {
       });
       this.setState({
         headers: headerData.concat(headers),
-        body: bodyData.concat(body)
+        body: bodyData.concat(body),
+        statusCode: statusCodeData
       });
     }
   }
@@ -95,7 +112,7 @@ class ResponseConfig extends Component {
     const data = {};
     const currentData = this.getCurrentData();
     const valueStr = JSON.stringify(currentData);
-
+    // console.log(currentData);
     if (value !== undefined) {
       try {
         Object.assign(data, JSON.parse(value));
@@ -110,7 +127,7 @@ class ResponseConfig extends Component {
   }
 
   getCurrentData = () => {
-    const { headers, body } = this.state;
+    const { headers, body, statusCode } = this.state;
     const currentData = {};
     const hanleKeyValue = item => {
       if (currentData[item.type] === undefined) {
@@ -134,6 +151,12 @@ class ResponseConfig extends Component {
       }
       currentData[item.type].push(item.key);
     };
+    const hanleStatusCode = item => {
+      if (currentData[item.type] === undefined) {
+        currentData[item.type] = [];
+      }
+      currentData.statusCode = item.code;
+    };
     const handleForEach = item => {
       if (
         ["addHeaders", "setHeaders", "replaceHeaderKeys"].includes(item.type)
@@ -146,9 +169,13 @@ class ResponseConfig extends Component {
       if (["removeHeaderKeys", "removeBodyKeys"].includes(item.type)) {
         hanleKeys(item);
       }
+      if (["statusCode"].includes(item.type)) {
+        hanleStatusCode(item);
+      }
     };
     headers.forEach(handleForEach);
     body.forEach(handleForEach);
+    statusCode.forEach(handleForEach);
     return currentData;
   };
 
@@ -169,7 +196,9 @@ class ResponseConfig extends Component {
     });
     this.setState({
       [activeKey]:
-        value.type && state[activeKey][index].type === undefined
+        value.type &&
+        state[activeKey][index].type === undefined &&
+        activeKey !== "statusCode"
           ? newData.concat([{ id: (+new Date()).toString() }])
           : newData
     });
@@ -307,19 +336,42 @@ class ResponseConfig extends Component {
       }
     ];
 
+    const statusCodeColums = [
+      {
+        title: "Code",
+        dataIndex: "code",
+        render: (value, row) => (
+          <InputNumber
+            style={{ width: 100 }}
+            precision={0}
+            min={200}
+            max={599}
+            placeholder="200~599"
+            value={value}
+            onChange={v => this.onChangeConfig({ code: v }, row.id)}
+          />
+        )
+      }
+    ];
+
     return (
       <>
         <Tabs
           activeKey={activeKey}
-          onChange={key => this.setState({ activeKey: key })}
+          onChange={key =>
+            this.setState({
+              activeKey: key
+            })
+          }
         >
+          <TabPane tab="StatusCode" key="statusCode" />
           <TabPane tab="Headers" key="headers" />
           <TabPane tab="Body" key="body" />
         </Tabs>
         <Table
           rowKey="id"
           size="small"
-          columns={columns}
+          columns={activeKey === "statusCode" ? statusCodeColums : columns}
           dataSource={this.state[activeKey]}
           pagination={false}
         />

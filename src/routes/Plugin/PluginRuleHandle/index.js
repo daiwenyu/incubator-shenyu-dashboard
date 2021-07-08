@@ -5,7 +5,7 @@ import ResponseRuleHandle from "./ResponseRuleHandle";
 
 export default {
   request: RequestRuleHandle,
-  response: ResponseRuleHandle,
+  modifyResponse: ResponseRuleHandle,
   hystrix: HystrixRuleHandle,
   param_mapping: ParamPluginRuleHandle
 };
