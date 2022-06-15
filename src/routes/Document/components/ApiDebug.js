@@ -15,6 +15,7 @@ import React, {
   useImperativeHandle,
   createRef
 } from "react";
+import ReactJson from "react-json-view";
 import { sandboxProxyGateway } from "../../../services/api";
 
 const { Title, Text } = Typography;
@@ -77,6 +78,17 @@ const FCForm = forwardRef(({ form, onSubmit, apiDetail }, ref) => {
 
   // console.log(apiDetail);
 
+  const createRequestJson = params => {
+    console.log(params);
+  };
+
+  useEffect(
+    () => {
+      createRequestJson(requestParameters);
+    },
+    [requestParameters]
+  );
+
   return (
     <Form
       labelCol={{ span: 4 }}
@@ -102,14 +114,15 @@ const FCForm = forwardRef(({ form, onSubmit, apiDetail }, ref) => {
         })(<Input />)}
       </FormItem>
       <Title level={2}>请求参数</Title>
-      <Table
+      {/* <Table
         rowKey="id"
         bordered
         dataSource={requestParameters || []}
         pagination={false}
         columns={columns}
         childrenColumnName="refs"
-      />
+      /> */}
+      <ReactJson src={{}} name={false} />
       <FormItem label="httpMethod">
         {form.getFieldDecorator("method", {
           initialValue: httpMethodList[0]?.toLocaleUpperCase(),
