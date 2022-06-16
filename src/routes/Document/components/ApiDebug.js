@@ -38,48 +38,16 @@ const FCForm = forwardRef(({ form, onSubmit, apiDetail }, ref) => {
     onSubmit();
   };
 
-  const columns = [
-    {
-      title: "名称",
-      dataIndex: "name"
-    },
-    {
-      title: "类型",
-      dataIndex: "type",
-      width: 80
-    },
-    {
-      title: "参数值",
-      dataIndex: "example",
-      editable: true,
-      // onCell: record => ({
-      //   record,
-      //   editable: true,
-      //   dataIndex: "example",
-      //   title: "参数值"
-      //   // handleSave: this.handleSave,
-      // })
-      render(text, record) {
-        // console.log(text, record);
-        if (record.refs) {
-          return null;
-        }
-        return (
-          <FormItem wrapperCol={{ span: 24 }}>
-            {form.getFieldDecorator(`bizParam.${record.name}`, {
-              initialValue: text,
-              rules: [{ type: "string", required: record.required }]
-            })(<Input />)}
-          </FormItem>
-        );
-      }
-    }
-  ];
-
-  // console.log(apiDetail);
-
   const createRequestJson = params => {
     console.log(params);
+    const exampleJSON = {};
+
+    const key = [];
+    const loop = data => {
+      data.map(item => {
+        const { name, refs, example } = item;
+      });
+    };
   };
 
   useEffect(
@@ -93,7 +61,6 @@ const FCForm = forwardRef(({ form, onSubmit, apiDetail }, ref) => {
     <Form
       labelCol={{ span: 4 }}
       wrapperCol={{ span: 20 }}
-      // layout="vertical"
       onSubmit={handleSubmit}
     >
       <Title level={2}>{summary}</Title>
@@ -105,23 +72,15 @@ const FCForm = forwardRef(({ form, onSubmit, apiDetail }, ref) => {
       </FormItem>
       <FormItem label="appKey">
         {form.getFieldDecorator("appKey", {
-          rules: [{ type: "string", required: true }]
+          rules: [{ type: "string" }]
         })(<Input />)}
       </FormItem>
       <FormItem label="Cookie">
         {form.getFieldDecorator("cookie", {
-          rules: [{ type: "string", required: true }]
+          rules: [{ type: "string" }]
         })(<Input />)}
       </FormItem>
       <Title level={2}>请求参数</Title>
-      {/* <Table
-        rowKey="id"
-        bordered
-        dataSource={requestParameters || []}
-        pagination={false}
-        columns={columns}
-        childrenColumnName="refs"
-      /> */}
       <ReactJson src={{}} name={false} />
       <FormItem label="httpMethod">
         {form.getFieldDecorator("method", {
