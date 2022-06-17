@@ -38,16 +38,33 @@ const FCForm = forwardRef(({ form, onSubmit, apiDetail }, ref) => {
     onSubmit();
   };
 
-  const createRequestJson = params => {
+  const createRequestJson = (params = []) => {
     console.log(params);
     const exampleJSON = {};
 
     const key = [];
-    const loop = data => {
+    const loop = (data, obj) => {
       data.map(item => {
-        const { name, refs, example } = item;
+        const { name, refs, example, type } = item;
+        key.push(name);
+        switch (type) {
+          case "array":
+            break;
+          case "object":
+            break;
+          default:
+            exampleJSON[name] = example;
+            break;
+        }
+        if (Array.isArray(refs)) {
+        } else {
+          key.pop();
+        }
       });
     };
+
+    loop(params, exampleJSON);
+    console.log(exampleJSON);
   };
 
   useEffect(
