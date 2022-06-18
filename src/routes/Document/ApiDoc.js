@@ -1,12 +1,8 @@
-import { Col, Row, Typography, Input, Tabs, Icon, Card, Table } from "antd";
+import { Col, Row, Card, BackTop } from "antd";
 import React, { useEffect, useState } from "react";
 import SearchApi from "./components/SearchApi";
 import ApiInfo from "./components/ApiInfo";
-import ApiDebug from "./components/ApiDebug";
-import { getDocItem, sandboxProxyGateway } from "../../services/api";
-
-const { TabPane } = Tabs;
-const { Title, Text } = Typography;
+import { getDocItem } from "../../services/api";
 
 function ApiDoc() {
   const [apiDetail, setApiDetail] = useState({});
@@ -20,7 +16,7 @@ function ApiDoc() {
 
   useEffect(() => {
     // FIXME
-    handleSelectNode(["2b7ebf2b-8212-42c0-a7fa-6a3098b6f2eb"]);
+    handleSelectNode(["63415500-7bc3-4eed-a9d5-4679f05e1a59"]);
   }, []);
 
   return (
@@ -30,30 +26,10 @@ function ApiDoc() {
           <SearchApi onSelect={handleSelectNode} />
         </Col>
         <Col span={18}>
-          <Tabs type="card" defaultActiveKey="2">
-            <TabPane
-              key="1"
-              tab={
-                <span>
-                  <Icon type="file-text" />接口信息
-                </span>
-              }
-            >
-              <ApiInfo data={apiDetail} />
-            </TabPane>
-            <TabPane
-              key="2"
-              tab={
-                <span>
-                  <Icon type="code" />接口调试
-                </span>
-              }
-            >
-              <ApiDebug data={apiDetail} />
-            </TabPane>
-          </Tabs>
+          <ApiInfo data={apiDetail} />
         </Col>
       </Row>
+      <BackTop />
     </Card>
   );
 }

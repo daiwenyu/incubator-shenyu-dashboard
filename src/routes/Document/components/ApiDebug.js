@@ -6,7 +6,10 @@ import {
   Button,
   Radio,
   Tabs,
-  Card
+  Card,
+  Row,
+  Col,
+  Tree
 } from "antd";
 import React, {
   useEffect,
@@ -19,52 +22,85 @@ import ReactJson from "react-json-view";
 import { sandboxProxyGateway } from "../../../services/api";
 
 const { Title, Text } = Typography;
+const { TreeNode } = Tree;
 const FormItem = Form.Item;
-const { TabPane } = Tabs;
 
 const FCForm = forwardRef(({ form, onSubmit, apiDetail }, ref) => {
   useImperativeHandle(ref, () => ({
     form
   }));
-  const {
-    summary,
-    name: apiUrl,
-    httpMethodList = [],
-    requestParameters
-  } = apiDetail;
+  const { name: apiUrl, httpMethodList = [], requestParameters } = apiDetail;
+  const [questJson, setRequestJson] = useState({});
 
   const handleSubmit = e => {
     e.preventDefault();
-    onSubmit();
+    ref.current.form.validateFieldsAndScroll((errors, values) => {
+      if (!errors) {
+        onSubmit({
+          ...values,
+          bizParam: questJson
+        });
+      }
+    });
   };
 
   const createRequestJson = (params = []) => {
-    console.log(params);
     const exampleJSON = {};
-
     const key = [];
-    const loop = (data, obj) => {
+    const loopExample = (data, obj) => {
       data.map(item => {
         const { name, refs, example, type } = item;
         key.push(name);
         switch (type) {
           case "array":
+            if (Array.isArray(refs)) {
+              obj[name] = [{}];
+              key.push(0);
+              loopExample(refs, obj[name][0]);
+              key.pop();
+            } else {
+              obj[name] = [];
+            }
             break;
           case "object":
+            obj[name] = {};
+            if (Array.isArray(refs)) {
+              loopExample(refs, obj[name]);
+            }
             break;
           default:
-            exampleJSON[name] = example;
+            obj[name] = example;
             break;
         }
-        if (Array.isArray(refs)) {
-        } else {
-          key.pop();
-        }
+        key.pop();
       });
     };
 
-    loop(params, exampleJSON);
-    console.log(exampleJSON);
+    loopExample(params, exampleJSON);
+    setRequestJson(exampleJSON);
+  };
+
+  const renderTreeNode = (data, indexArr = []) => {
+    return data.map((item, index) => {
+      const { name, type, required, description } = item;
+      const TreeTitle = (
+        <>
+          <Text strong>{name}</Text>
+          &nbsp;<Text code>{type}</Text>
+          &nbsp;<Text mark>{required ? "required" : "optional"}</Text>
+          &nbsp;<Text type="secondary">{description}</Text>
+        </>
+      );
+      return (
+        <TreeNode key={[...indexArr, index].join("-")} title={TreeTitle}>
+          {item.refs && renderTreeNode(item.refs, [...indexArr, index])}
+        </TreeNode>
+      );
+    });
+  };
+
+  const updateJson = obj => {
+    setRequestJson(obj.updated_src);
   };
 
   useEffect(
@@ -75,12 +111,8 @@ const FCForm = forwardRef(({ form, onSubmit, apiDetail }, ref) => {
   );
 
   return (
-    <Form
-      labelCol={{ span: 4 }}
-      wrapperCol={{ span: 20 }}
-      onSubmit={handleSubmit}
-    >
-      <Title level={2}>{summary}</Title>
+    <Form onSubmit={handleSubmit}>
+      <Title level={4}>请求信息</Title>
       <FormItem label="网关地址">
         {form.getFieldDecorator("gatewayUrl", {
           initialValue: location.origin + apiUrl,
@@ -97,8 +129,6 @@ const FCForm = forwardRef(({ form, onSubmit, apiDetail }, ref) => {
           rules: [{ type: "string" }]
         })(<Input />)}
       </FormItem>
-      <Title level={2}>请求参数</Title>
-      <ReactJson src={{}} name={false} />
       <FormItem label="httpMethod">
         {form.getFieldDecorator("method", {
           initialValue: httpMethodList[0]?.toLocaleUpperCase(),
@@ -109,9 +139,33 @@ const FCForm = forwardRef(({ form, onSubmit, apiDetail }, ref) => {
           />
         )}
       </FormItem>
-      <Button htmlType="submit" type="primary">
-        发送请求
-      </Button>
+      <FormItem label="请求参数" required />
+      <Row gutter={16}>
+        <Col span={14}>
+          <ReactJson
+            src={questJson}
+            theme="monokai"
+            displayDataTypes={false}
+            name={false}
+            onAdd={updateJson}
+            onEdit={updateJson}
+            onDelete={updateJson}
+            style={{ borderRadius: 4, padding: 16 }}
+          />
+        </Col>
+        <Col span={10}>
+          {requestParameters && (
+            <Tree showLine defaultExpandAll>
+              {renderTreeNode(requestParameters)}
+            </Tree>
+          )}
+        </Col>
+      </Row>
+      <FormItem label=" " colon={false}>
+        <Button htmlType="submit" type="primary">
+          发送请求
+        </Button>
+      </FormItem>
     </Form>
   );
 });
@@ -121,17 +175,12 @@ const EnhancedFCForm = Form.create()(FCForm);
 function ApiDebug(props) {
   const { data: apiInfoData } = props;
   const [apiDetail, setApiDetail] = useState({});
-  const [requestInfo, setRequestInfo] = useState({});
   const [responseInfo, setResponseInfo] = useState({});
   const formRef = createRef();
 
-  const handleSubmit = () => {
-    formRef.current.form.validateFieldsAndScroll((errors, values) => {
-      console.log(values);
-      if (!errors) {
-        setRequestInfo(values);
-      }
-    });
+  const handleSubmit = async values => {
+    const res = await sandboxProxyGateway(values);
+    setResponseInfo(res);
   };
 
   useEffect(
@@ -148,14 +197,10 @@ function ApiDebug(props) {
         apiDetail={apiDetail}
         onSubmit={handleSubmit}
       />
-      <Tabs>
-        <TabPane tab="请求信息" key="1">
-          <Card />
-        </TabPane>
-        <TabPane tab="请求结果" key="2">
-          <Card />
-        </TabPane>
-      </Tabs>
+      <Title level={4}>请求结果</Title>
+      <Card>
+        <ReactJson src={responseInfo} name={false} />
+      </Card>
     </>
   );
 }

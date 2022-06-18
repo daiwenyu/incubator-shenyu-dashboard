@@ -83,7 +83,7 @@ function SearchApi(props) {
   }, []);
 
   return (
-    <>
+    <div style={{ overflow: "auto" }}>
       <Search onChange={handleSearchChange} />
       <Tree
         autoExpandParent={autoExpandParent}
@@ -93,7 +93,7 @@ function SearchApi(props) {
       >
         {renderTreeNode(menuData)}
       </Tree>
-    </>
+    </div>
   );
 }
 

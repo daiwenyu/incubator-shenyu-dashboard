@@ -1,7 +1,8 @@
-import { Typography, Table } from "antd";
+import { Typography, Table, Card, Button } from "antd";
 import React, { useEffect, useState } from "react";
+import ApiDebug from "./ApiDebug";
 
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 const columns = [
   {
@@ -69,41 +70,52 @@ function ApiInfo(props) {
   return (
     <>
       <Title level={2}>{apiDetail.summary}</Title>
-      <Title level={3}>接口描述</Title>
-      {apiDetail.description}
-      <Title level={3}>请求地址</Title>
-      {location.origin + apiDetail.name}
+      <Title level={4}>接口名</Title>
+      <Text code>{apiDetail.name}</Text>
+      <Title level={4}>接口描述</Title>
+      <Text type="secondary">{apiDetail.description}</Text>
+
       <Title level={2}>请求参数</Title>
-      <Title level={3}>业务请求参数</Title>
-      <Table
-        rowKey="id"
-        bordered
-        dataSource={apiDetail.requestParameters || []}
-        pagination={false}
-        childrenColumnName="refs"
-        columns={columns}
-      />
+      <Title level={4}>业务请求参数</Title>
+      <Paragraph>
+        <Table
+          size="small"
+          rowKey="id"
+          bordered
+          dataSource={apiDetail.requestParameters || []}
+          pagination={false}
+          childrenColumnName="refs"
+          columns={columns}
+        />
+      </Paragraph>
+
       <Title level={2}>响应参数</Title>
-      <Title level={3}>公共响应参数</Title>
-      <Table
-        rowKey="id"
-        bordered
-        dataSource={defaultCommonData}
-        pagination={false}
-        columns={columns.filter((_, i) => ![2, 3].includes(i))}
-      />
-      <Title level={3}>业务响应参数</Title>
-      <Table
-        rowKey="id"
-        bordered
-        dataSource={apiDetail.responseParameters || []}
-        pagination={false}
-        childrenColumnName="refs"
-        columns={columns}
-      />
-      <Title level={3}>响应示例</Title>
-      <Title level={3}>错误示例</Title>
-      {/* <Title level={2}>业务错误码</Title> */}
+      <Title level={4}>公共响应参数</Title>
+      <Paragraph>
+        <Table
+          size="small"
+          rowKey="id"
+          bordered
+          dataSource={defaultCommonData}
+          pagination={false}
+          columns={columns.filter((_, i) => ![2, 3].includes(i))}
+        />
+      </Paragraph>
+      <Title level={4}>业务响应参数</Title>
+      <Paragraph>
+        <Table
+          size="small"
+          rowKey="id"
+          bordered
+          dataSource={apiDetail.responseParameters || []}
+          pagination={false}
+          childrenColumnName="refs"
+          columns={columns}
+        />
+      </Paragraph>
+
+      <Title level={2}>接口调试</Title>
+      <ApiDebug data={apiDetail} />
     </>
   );
 }

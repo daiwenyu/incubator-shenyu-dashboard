@@ -788,7 +788,7 @@ export function getDocItem(params) {
 /* sandbox proxyGateway */
 export function sandboxProxyGateway(params) {
   return request(`${baseUrlTest}/sandbox/proxyGateway`, {
-    method: `GET`,
+    method: `POST`,
     body: {
       ...params
     }
