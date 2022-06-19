@@ -1,11 +1,9 @@
 import {
   Typography,
-  Table,
   Form,
   Input,
   Button,
   Radio,
-  Tabs,
   Card,
   Row,
   Col,
@@ -16,20 +14,26 @@ import React, {
   useState,
   forwardRef,
   useImperativeHandle,
-  createRef
+  createRef,
+  useContext
 } from "react";
 import ReactJson from "react-json-view";
 import { sandboxProxyGateway } from "../../../services/api";
+import ApiContext from "./ApiContext";
 
 const { Title, Text } = Typography;
 const { TreeNode } = Tree;
 const FormItem = Form.Item;
 
-const FCForm = forwardRef(({ form, onSubmit, apiDetail }, ref) => {
+const FCForm = forwardRef(({ form, onSubmit }, ref) => {
   useImperativeHandle(ref, () => ({
     form
   }));
-  const { name: apiUrl, httpMethodList = [], requestParameters } = apiDetail;
+
+  const {
+    apiDetail: { name: apiUrl, httpMethodList, requestParameters },
+    apiData: { appKey, gatewayUrl, cookie }
+  } = useContext(ApiContext);
   const [questJson, setRequestJson] = useState({});
 
   const handleSubmit = e => {
@@ -87,7 +91,12 @@ const FCForm = forwardRef(({ form, onSubmit, apiDetail }, ref) => {
         <>
           <Text strong>{name}</Text>
           &nbsp;<Text code>{type}</Text>
-          &nbsp;<Text mark>{required ? "required" : "optional"}</Text>
+          &nbsp;
+          {required ? (
+            <Text type="danger">required</Text>
+          ) : (
+            <Text type="warning">optional</Text>
+          )}
           &nbsp;<Text type="secondary">{description}</Text>
         </>
       );
@@ -115,27 +124,33 @@ const FCForm = forwardRef(({ form, onSubmit, apiDetail }, ref) => {
       <Title level={4}>请求信息</Title>
       <FormItem label="网关地址">
         {form.getFieldDecorator("gatewayUrl", {
-          initialValue: location.origin + apiUrl,
+          initialValue: gatewayUrl + apiUrl,
           rules: [{ type: "string", required: true }]
         })(<Input />)}
       </FormItem>
-      <FormItem label="appKey">
+      <FormItem label="AppKey">
         {form.getFieldDecorator("appKey", {
+          initialValue: appKey,
           rules: [{ type: "string" }]
-        })(<Input />)}
+        })(
+          <Input placeholder=" If the current API requires signature authentication, this parameter is required" />
+        )}
       </FormItem>
       <FormItem label="Cookie">
         {form.getFieldDecorator("cookie", {
+          initialValue: cookie,
           rules: [{ type: "string" }]
-        })(<Input />)}
+        })(
+          <Input placeholder="Fill in the real cookie value.(signature authentication and login free API ignore this item)" />
+        )}
       </FormItem>
       <FormItem label="httpMethod">
         {form.getFieldDecorator("method", {
-          initialValue: httpMethodList[0]?.toLocaleUpperCase(),
+          initialValue: httpMethodList?.[0]?.toLocaleUpperCase(),
           rules: [{ type: "string", required: true }]
         })(
           <Radio.Group
-            options={httpMethodList.map(v => v.toLocaleUpperCase())}
+            options={httpMethodList?.map(v => v.toLocaleUpperCase())}
           />
         )}
       </FormItem>
@@ -172,9 +187,7 @@ const FCForm = forwardRef(({ form, onSubmit, apiDetail }, ref) => {
 
 const EnhancedFCForm = Form.create()(FCForm);
 
-function ApiDebug(props) {
-  const { data: apiInfoData } = props;
-  const [apiDetail, setApiDetail] = useState({});
+function ApiDebug() {
   const [responseInfo, setResponseInfo] = useState({});
   const formRef = createRef();
 
@@ -183,20 +196,9 @@ function ApiDebug(props) {
     setResponseInfo(res);
   };
 
-  useEffect(
-    () => {
-      setApiDetail(apiInfoData);
-    },
-    [apiInfoData]
-  );
-
   return (
     <>
-      <EnhancedFCForm
-        wrappedComponentRef={formRef}
-        apiDetail={apiDetail}
-        onSubmit={handleSubmit}
-      />
+      <EnhancedFCForm wrappedComponentRef={formRef} onSubmit={handleSubmit} />
       <Title level={4}>请求结果</Title>
       <Card>
         <ReactJson src={responseInfo} name={false} />

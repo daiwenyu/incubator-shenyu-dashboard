@@ -1,38 +1,18 @@
 import { Tree, Input } from "antd";
-import React, { useEffect, useState } from "react";
-import { getDocMenus } from "../../../services/api";
+import React, { useContext, useEffect, useState } from "react";
+import ApiContext from "./ApiContext";
 
 const { TreeNode } = Tree;
 const { Search } = Input;
 
 function SearchApi(props) {
   const { onSelect } = props;
-  const [menuData, setMenuData] = useState([]);
   const [expandedKeys, setExpandedKeys] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [autoExpandParent, setAutoExpandParent] = useState(true);
-
-  const initData = async () => {
-    const { code, data = {} } = await getDocMenus();
-    if (code === 200) {
-      const { menuProjects = [] } = data;
-      const treeKeys = [];
-      const createKey = (treeData, keys) => {
-        treeData.forEach((item, index) => {
-          const { children, id } = item;
-          const key = [...keys, index].join("-");
-          item.key = id || key;
-          treeKeys.push(key);
-          if (children?.length) {
-            createKey(children, [...keys, index]);
-          }
-        });
-      };
-      createKey(menuProjects, []);
-      setMenuData(menuProjects);
-      setExpandedKeys(treeKeys);
-    }
-  };
+  const {
+    apiData: { menuProjects }
+  } = useContext(ApiContext);
 
   const renderTreeNode = data => {
     return data.map(item => {
@@ -78,21 +58,28 @@ function SearchApi(props) {
     setAutoExpandParent(false);
   };
 
-  useEffect(() => {
-    initData();
-  }, []);
+  useEffect(
+    () => {
+      // FIXME 设置展开key
+      // console.log(menuProjects);
+    },
+    [menuProjects]
+  );
 
   return (
     <div style={{ overflow: "auto" }}>
       <Search onChange={handleSearchChange} />
-      <Tree
-        autoExpandParent={autoExpandParent}
-        expandedKeys={expandedKeys}
-        onExpand={handleExpandChange}
-        onSelect={onSelect}
-      >
-        {renderTreeNode(menuData)}
-      </Tree>
+      {menuProjects && (
+        <Tree
+          defaultExpandAll
+          autoExpandParent={autoExpandParent}
+          expandedKeys={expandedKeys}
+          onExpand={handleExpandChange}
+          onSelect={onSelect}
+        >
+          {renderTreeNode(menuProjects)}
+        </Tree>
+      )}
     </div>
   );
 }

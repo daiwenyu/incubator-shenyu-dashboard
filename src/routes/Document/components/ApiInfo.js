@@ -1,6 +1,7 @@
-import { Typography, Table, Card, Button } from "antd";
-import React, { useEffect, useState } from "react";
+import { Typography, Table } from "antd";
+import React, { useContext } from "react";
 import ApiDebug from "./ApiDebug";
+import ApiContext from "./ApiContext";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -56,24 +57,51 @@ const defaultCommonData = [
   }
 ];
 
-function ApiInfo(props) {
-  const { data } = props;
-  const [apiDetail, setApiDetail] = useState({});
+const envPropsColumns = [
+  {
+    title: "环境",
+    dataIndex: "envLabel"
+  },
+  {
+    title: "类型",
+    dataIndex: "addressLabel"
+  },
+  {
+    title: "请求地址",
+    dataIndex: "addressUrl"
+  }
+];
 
-  useEffect(
-    () => {
-      setApiDetail(data);
-    },
-    [data]
-  );
+function ApiInfo() {
+  const {
+    apiData: { envProps = [] },
+    apiDetail: {
+      summary,
+      name: apiName,
+      description,
+      requestParameters,
+      responseParameters
+    }
+  } = useContext(ApiContext);
 
   return (
     <>
-      <Title level={2}>{apiDetail.summary}</Title>
+      <Title level={2}>{summary}</Title>
       <Title level={4}>接口名</Title>
-      <Text code>{apiDetail.name}</Text>
+      <Text code>{apiName}</Text>
       <Title level={4}>接口描述</Title>
-      <Text type="secondary">{apiDetail.description}</Text>
+      <Text type="secondary">{description}</Text>
+      <Title level={4}>请求地址</Title>
+      <Paragraph>
+        <Table
+          size="small"
+          rowKey="envLabel"
+          bordered
+          dataSource={envProps}
+          pagination={false}
+          columns={envPropsColumns}
+        />
+      </Paragraph>
 
       <Title level={2}>请求参数</Title>
       <Title level={4}>业务请求参数</Title>
@@ -82,7 +110,7 @@ function ApiInfo(props) {
           size="small"
           rowKey="id"
           bordered
-          dataSource={apiDetail.requestParameters || []}
+          dataSource={requestParameters}
           pagination={false}
           childrenColumnName="refs"
           columns={columns}
@@ -107,7 +135,7 @@ function ApiInfo(props) {
           size="small"
           rowKey="id"
           bordered
-          dataSource={apiDetail.responseParameters || []}
+          dataSource={responseParameters}
           pagination={false}
           childrenColumnName="refs"
           columns={columns}
@@ -115,7 +143,7 @@ function ApiInfo(props) {
       </Paragraph>
 
       <Title level={2}>接口调试</Title>
-      <ApiDebug data={apiDetail} />
+      <ApiDebug />
     </>
   );
 }
