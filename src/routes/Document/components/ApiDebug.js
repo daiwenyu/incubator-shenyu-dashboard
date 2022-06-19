@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
   Typography,
   Form,
@@ -18,8 +35,10 @@ import React, {
   useContext
 } from "react";
 import ReactJson from "react-json-view";
+import fetch from "dva/fetch";
 import { sandboxProxyGateway } from "../../../services/api";
 import ApiContext from "./ApiContext";
+import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Title, Text } = Typography;
 const { TreeNode } = Tree;
@@ -52,7 +71,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
     const exampleJSON = {};
     const key = [];
     const loopExample = (data, obj) => {
-      data.map(item => {
+      data.forEach(item => {
         const { name, refs, example, type } = item;
         key.push(name);
         switch (type) {
@@ -121,8 +140,10 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Title level={4}>请求信息</Title>
-      <FormItem label="网关地址">
+      <Title level={4}>
+        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.INFORMATION")}
+      </Title>
+      <FormItem label="GatewayUrl">
         {form.getFieldDecorator("gatewayUrl", {
           initialValue: gatewayUrl + apiUrl,
           rules: [{ type: "string", required: true }]
@@ -144,7 +165,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
           <Input placeholder="Fill in the real cookie value.(signature authentication and login free API ignore this item)" />
         )}
       </FormItem>
-      <FormItem label="httpMethod">
+      <FormItem label="HttpMethod">
         {form.getFieldDecorator("method", {
           initialValue: httpMethodList?.[0]?.toLocaleUpperCase(),
           rules: [{ type: "string", required: true }]
@@ -154,7 +175,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
           />
         )}
       </FormItem>
-      <FormItem label="请求参数" required />
+      <FormItem label="RequestParameters" required />
       <Row gutter={16}>
         <Col span={14}>
           <ReactJson
@@ -178,7 +199,7 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
       </Row>
       <FormItem label=" " colon={false}>
         <Button htmlType="submit" type="primary">
-          发送请求
+          {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.SEND.REQUEST")}
         </Button>
       </FormItem>
     </Form>
@@ -192,14 +213,26 @@ function ApiDebug() {
   const formRef = createRef();
 
   const handleSubmit = async values => {
-    const res = await sandboxProxyGateway(values);
-    setResponseInfo(res);
+    const baseUrl = document.getElementById("httpPath").innerHTML;
+    const baseUrlTest = "http://139.199.37.58:9095";
+    fetch(`${baseUrlTest}/sandbox/proxyGateway`, {
+      method: "POST",
+      data: values
+    }).then(async response => {
+      const data = await response.json();
+      console.log(response.headers.keys());
+      // return response;
+    });
+    // const res = await sandboxProxyGateway(values);
+    // setResponseInfo(res);
   };
 
   return (
     <>
       <EnhancedFCForm wrappedComponentRef={formRef} onSubmit={handleSubmit} />
-      <Title level={4}>请求结果</Title>
+      <Title level={4}>
+        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.RESULTS")}
+      </Title>
       <Card>
         <ReactJson src={responseInfo} name={false} />
       </Card>

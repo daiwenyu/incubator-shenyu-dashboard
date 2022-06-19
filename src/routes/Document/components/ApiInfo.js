@@ -1,7 +1,25 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { Typography, Table } from "antd";
 import React, { useContext } from "react";
 import ApiDebug from "./ApiDebug";
 import ApiContext from "./ApiContext";
+import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -87,11 +105,17 @@ function ApiInfo() {
   return (
     <>
       <Title level={2}>{summary}</Title>
-      <Title level={4}>接口名</Title>
+      <Title level={4}>
+        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.NAME")}
+      </Title>
       <Text code>{apiName}</Text>
-      <Title level={4}>接口描述</Title>
+      <Title level={4}>
+        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.DESCRIPTION")}
+      </Title>
       <Text type="secondary">{description}</Text>
-      <Title level={4}>请求地址</Title>
+      <Title level={4}>
+        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS")}
+      </Title>
       <Paragraph>
         <Table
           size="small"
@@ -103,8 +127,14 @@ function ApiInfo() {
         />
       </Paragraph>
 
-      <Title level={2}>请求参数</Title>
-      <Title level={4}>业务请求参数</Title>
+      <Title level={2}>
+        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.PARAMETERS")}
+      </Title>
+      <Title level={4}>
+        {getIntlContent(
+          "SHENYU.DOCUMENT.APIDOC.INFO.SERVICE.REQUEST.PARAMETERS"
+        )}
+      </Title>
       <Paragraph>
         <Table
           size="small"
@@ -117,8 +147,14 @@ function ApiInfo() {
         />
       </Paragraph>
 
-      <Title level={2}>响应参数</Title>
-      <Title level={4}>公共响应参数</Title>
+      <Title level={2}>
+        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.RESPONSE.PARAMETERS")}
+      </Title>
+      <Title level={4}>
+        {getIntlContent(
+          "SHENYU.DOCUMENT.APIDOC.INFO.COMMON.RESPONSE.PARAMETERS"
+        )}
+      </Title>
       <Paragraph>
         <Table
           size="small"
@@ -129,7 +165,11 @@ function ApiInfo() {
           columns={columns.filter((_, i) => ![2, 3].includes(i))}
         />
       </Paragraph>
-      <Title level={4}>业务响应参数</Title>
+      <Title level={4}>
+        {getIntlContent(
+          "SHENYU.DOCUMENT.APIDOC.INFO.BUSINESS.RESPONSE.PARAMETERS"
+        )}
+      </Title>
       <Paragraph>
         <Table
           size="small"
@@ -142,7 +182,9 @@ function ApiInfo() {
         />
       </Paragraph>
 
-      <Title level={2}>接口调试</Title>
+      <Title level={2}>
+        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.DEBUG")}
+      </Title>
       <ApiDebug />
     </>
   );
