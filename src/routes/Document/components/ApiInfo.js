@@ -25,28 +25,33 @@ const { Title, Text, Paragraph } = Typography;
 
 const columns = [
   {
-    title: "名称",
+    title: getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"),
     dataIndex: "name"
   },
   {
-    title: "类型",
+    title: getIntlContent("SHENYU.COMMON.TYPE"),
     dataIndex: "type"
   },
   {
-    title: "必填",
+    title: getIntlContent("SHENYU.COMMON.REQUIRED"),
     dataIndex: "required",
-    render: v => (v ? <Text type="danger">是</Text> : "否")
+    render: v =>
+      v ? (
+        <Text type="danger">{getIntlContent("SHENYU.COMMON.YES")}</Text>
+      ) : (
+        getIntlContent("SHENYU.COMMON.NO")
+      )
   },
   {
-    title: "最大长度",
+    title: getIntlContent("SHENYU.COMMON.MAX.LENGTH"),
     dataIndex: "maxLength"
   },
   {
-    title: "描述",
+    title: getIntlContent("SHENYU.PLUGIN.DESCRIBE"),
     dataIndex: "description"
   },
   {
-    title: "示例值",
+    title: getIntlContent("SHENYU.COMMON.MAX.EXAMPLE"),
     dataIndex: "example"
   }
 ];
@@ -77,15 +82,15 @@ const defaultCommonData = [
 
 const envPropsColumns = [
   {
-    title: "环境",
+    title: getIntlContent("SHENYU.COMMON.MAX.ENVIRONMENT"),
     dataIndex: "envLabel"
   },
   {
-    title: "类型",
+    title: getIntlContent("SHENYU.COMMON.TYPE"),
     dataIndex: "addressLabel"
   },
   {
-    title: "请求地址",
+    title: getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS"),
     dataIndex: "addressUrl"
   }
 ];

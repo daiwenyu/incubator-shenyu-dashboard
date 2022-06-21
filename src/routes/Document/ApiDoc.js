@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Col, Row, Card, BackTop } from "antd";
+import { Col, Row, Card, BackTop, Empty } from "antd";
 import React, { useEffect, useState } from "react";
 import SearchApi from "./components/SearchApi";
 import ApiInfo from "./components/ApiInfo";
@@ -45,14 +45,6 @@ function ApiDoc() {
       createKey(menuProjects, []);
       data.menuProjects = menuProjects;
       setApiData(data);
-      // FIXME
-      handleSelectNode([], {
-        node: {
-          props: {
-            id: "63415500-7bc3-4eed-a9d5-4679f05e1a59"
-          }
-        }
-      });
     }
   };
 
@@ -85,7 +77,11 @@ function ApiDoc() {
             <SearchApi onSelect={handleSelectNode} />
           </Col>
           <Col span={18}>
-            <ApiInfo />
+            {apiDetail.id ? (
+              <ApiInfo />
+            ) : (
+              <Empty description={false} style={{ padding: "160px 0" }} />
+            )}
           </Col>
         </Row>
         <BackTop />

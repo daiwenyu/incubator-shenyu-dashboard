@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Tree, Input } from "antd";
+import { Tree, Input, Empty } from "antd";
 import React, { useContext, useEffect, useState } from "react";
 import ApiContext from "./ApiContext";
 import { getIntlContent } from "../../../utils/IntlUtils";
@@ -109,10 +109,13 @@ function SearchApi(props) {
   return (
     <div style={{ overflow: "auto" }}>
       <Search
+        allowClear
         onChange={handleSearchChange}
-        placeholder={getIntlContent("SHENYU.DOCUMENT.APIDOC.SEARCH.PLACEHOLDER")}
+        placeholder={getIntlContent(
+          "SHENYU.DOCUMENT.APIDOC.SEARCH.PLACEHOLDER"
+        )}
       />
-      {menuProjects && (
+      {menuProjects?.length ? (
         <Tree
           autoExpandParent={autoExpandParent}
           expandedKeys={expandedKeys}
@@ -121,6 +124,8 @@ function SearchApi(props) {
         >
           {renderTreeNode(menuProjects)}
         </Tree>
+      ) : (
+        <Empty style={{ padding: "80px 0" }} description={false} />
       )}
     </div>
   );

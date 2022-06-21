@@ -24,7 +24,8 @@ import {
   Card,
   Row,
   Col,
-  Tree
+  Tree,
+  Empty
 } from "antd";
 import React, {
   useEffect,
@@ -147,14 +148,17 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
         {form.getFieldDecorator("gatewayUrl", {
           initialValue: gatewayUrl + apiUrl,
           rules: [{ type: "string", required: true }]
-        })(<Input />)}
+        })(<Input allowClear />)}
       </FormItem>
       <FormItem label="AppKey">
         {form.getFieldDecorator("appKey", {
           initialValue: appKey,
           rules: [{ type: "string" }]
         })(
-          <Input placeholder=" If the current API requires signature authentication, this parameter is required" />
+          <Input
+            allowClear
+            placeholder=" If the current API requires signature authentication, this parameter is required"
+          />
         )}
       </FormItem>
       <FormItem label="Cookie">
@@ -162,7 +166,10 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
           initialValue: cookie,
           rules: [{ type: "string" }]
         })(
-          <Input placeholder="Fill in the real cookie value.(signature authentication and login free API ignore this item)" />
+          <Input
+            allowClear
+            placeholder="Fill in the real cookie value.(signature authentication and login free API ignore this item)"
+          />
         )}
       </FormItem>
       <FormItem label="HttpMethod">
@@ -190,11 +197,20 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
           />
         </Col>
         <Col span={10}>
-          {requestParameters && (
-            <Tree showLine defaultExpandAll>
-              {renderTreeNode(requestParameters)}
-            </Tree>
-          )}
+          <div
+            style={{
+              borderRadius: 4,
+              border: "1px solid #e8e8e8",
+              overflow: "auto",
+              padding: 8
+            }}
+          >
+            {requestParameters && (
+              <Tree showLine defaultExpandAll>
+                {renderTreeNode(requestParameters)}
+              </Tree>
+            )}
+          </div>
         </Col>
       </Row>
       <FormItem label=" " colon={false}>
@@ -209,23 +225,40 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
 const EnhancedFCForm = Form.create()(FCForm);
 
 function ApiDebug() {
+  const {
+    apiDetail: { id }
+  } = useContext(ApiContext);
   const [responseInfo, setResponseInfo] = useState({});
   const formRef = createRef();
 
   const handleSubmit = async values => {
-    const baseUrl = document.getElementById("httpPath").innerHTML;
-    const baseUrlTest = "http://139.199.37.58:9095";
-    fetch(`${baseUrlTest}/sandbox/proxyGateway`, {
+    fetch(sandboxProxyGateway(), {
       method: "POST",
-      data: values
+      headers: {
+        "X-Access-Token": sessionStorage.token
+      },
+      body: JSON.stringify(values)
     }).then(async response => {
       const data = await response.json();
-      console.log(response.headers.keys());
-      // return response;
+      setResponseInfo({
+        headers: {
+          "sandbox-params": response.headers.get("sandbox-params"),
+          "sandbox-beforesign": response.headers.get("sandbox-beforesign"),
+          "sandbox-sign": response.headers.get("sandbox-sign")
+        },
+        body: data
+      });
     });
-    // const res = await sandboxProxyGateway(values);
-    // setResponseInfo(res);
   };
+
+  useEffect(
+    () => {
+      setResponseInfo({});
+      // eslint-disable-next-line no-unused-expressions
+      formRef.current?.form.resetFields(["method"]);
+    },
+    [id]
+  );
 
   return (
     <>
@@ -234,7 +267,11 @@ function ApiDebug() {
         {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.RESULTS")}
       </Title>
       <Card>
-        <ReactJson src={responseInfo} name={false} />
+        {responseInfo.headers ? (
+          <ReactJson src={responseInfo} name={false} />
+        ) : (
+          <Empty description={null} />
+        )}
       </Card>
     </>
   );

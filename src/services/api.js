@@ -769,28 +769,21 @@ export function getNewEventRecodLogList() {
   });
 }
 
-const baseUrlTest = "http://139.199.37.58:9095";
-
 /* get all api */
 export function getDocMenus() {
-  return request(`${baseUrlTest}/apidoc/getDocMenus`, {
+  return request(`${baseUrl}/apidoc/getDocMenus`, {
     method: `GET`
   });
 }
 
 /* get api item */
 export function getDocItem(params) {
-  return request(`${baseUrlTest}/apidoc/getDocItem?${stringify(params)}`, {
+  return request(`${baseUrl}/apidoc/getDocItem?${stringify(params)}`, {
     method: `GET`
   });
 }
 
 /* sandbox proxyGateway */
-export function sandboxProxyGateway(params) {
-  return request(`${baseUrlTest}/sandbox/proxyGateway`, {
-    method: `POST`,
-    body: {
-      ...params
-    }
-  });
+export function sandboxProxyGateway() {
+  return `${baseUrl}/sandbox/proxyGateway`;
 }
