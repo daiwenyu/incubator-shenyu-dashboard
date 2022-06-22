@@ -91,7 +91,7 @@ export const menuData = [
       {
         name: getIntlContent("SHENYU.MENU.DOCUMENT.APIDOC"),
         path: "apidoc",
-        locale: "SHENYU.MENU.SYSTEM.DOCUMENT.APIDOC"
+        locale: "SHENYU.MENU.DOCUMENT.APIDOC"
       }
     ]
   }

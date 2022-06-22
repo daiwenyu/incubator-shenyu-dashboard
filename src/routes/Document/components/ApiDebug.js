@@ -21,7 +21,6 @@ import {
   Input,
   Button,
   Radio,
-  Card,
   Row,
   Col,
   Tree,
@@ -41,6 +40,7 @@ import fetch from "dva/fetch";
 import { sandboxProxyGateway } from "../../../services/api";
 import ApiContext from "./ApiContext";
 import { getIntlContent } from "../../../utils/IntlUtils";
+import AuthButton from "../../../utils/AuthButton";
 
 const { Title, Text, Paragraph } = Typography;
 const { TreeNode } = Tree;
@@ -218,11 +218,13 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
           </div>
         </Col>
       </Row>
-      <FormItem label=" " colon={false}>
-        <Button htmlType="submit" type="primary">
-          {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.SEND.REQUEST")}
-        </Button>
-      </FormItem>
+      <AuthButton perms="document:apirun:send">
+        <FormItem label=" " colon={false}>
+          <Button htmlType="submit" type="primary">
+            {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.SEND.REQUEST")}
+          </Button>
+        </FormItem>
+      </AuthButton>
     </Form>
   );
 });
