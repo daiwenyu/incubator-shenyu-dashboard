@@ -25,7 +25,8 @@ import {
   Row,
   Col,
   Tree,
-  Empty
+  Empty,
+  Tabs
 } from "antd";
 import React, {
   useEffect,
@@ -41,8 +42,9 @@ import { sandboxProxyGateway } from "../../../services/api";
 import ApiContext from "./ApiContext";
 import { getIntlContent } from "../../../utils/IntlUtils";
 
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 const { TreeNode } = Tree;
+const { TabPane } = Tabs;
 const FormItem = Form.Item;
 
 const FCForm = forwardRef(({ form, onSubmit }, ref) => {
@@ -144,8 +146,8 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
       <Title level={4}>
         {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.INFORMATION")}
       </Title>
-      <FormItem label="GatewayUrl">
-        {form.getFieldDecorator("gatewayUrl", {
+      <FormItem label={getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS")}>
+        {form.getFieldDecorator("requestUrl", {
           initialValue: gatewayUrl + apiUrl,
           rules: [{ type: "string", required: true }]
         })(<Input allowClear />)}
@@ -172,8 +174,8 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
           />
         )}
       </FormItem>
-      <FormItem label="HttpMethod">
-        {form.getFieldDecorator("method", {
+      <FormItem label={getIntlContent("SHENYU.COMMON.HTTP.METHOD")}>
+        {form.getFieldDecorator("httpMethod", {
           initialValue: httpMethodList?.[0]?.toLocaleUpperCase(),
           rules: [{ type: "string", required: true }]
         })(
@@ -182,7 +184,10 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
           />
         )}
       </FormItem>
-      <FormItem label="RequestParameters" required />
+      <FormItem
+        label={getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.PARAMETERS")}
+        required
+      />
       <Row gutter={16}>
         <Col span={14}>
           <ReactJson
@@ -241,11 +246,9 @@ function ApiDebug() {
     }).then(async response => {
       const data = await response.json();
       setResponseInfo({
-        headers: {
-          "sandbox-params": response.headers.get("sandbox-params"),
-          "sandbox-beforesign": response.headers.get("sandbox-beforesign"),
-          "sandbox-sign": response.headers.get("sandbox-sign")
-        },
+        "sandbox-params": response.headers.get("sandbox-params"),
+        "sandbox-beforesign": response.headers.get("sandbox-beforesign"),
+        "sandbox-sign": response.headers.get("sandbox-sign"),
         body: data
       });
     });
@@ -263,16 +266,49 @@ function ApiDebug() {
   return (
     <>
       <EnhancedFCForm wrappedComponentRef={formRef} onSubmit={handleSubmit} />
-      <Title level={4}>
-        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.RESULTS")}
-      </Title>
-      <Card>
-        {responseInfo.headers ? (
-          <ReactJson src={responseInfo} name={false} />
-        ) : (
-          <Empty description={null} />
-        )}
-      </Card>
+      <Tabs type="card">
+        <TabPane
+          tab={getIntlContent(
+            "SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.INFORMATION"
+          )}
+          key="1"
+        >
+          {Object.keys(responseInfo).length ? (
+            <>
+              <Paragraph>
+                <Text strong>
+                  {getIntlContent(
+                    "SHENYU.DOCUMENT.APIDOC.CONTENTS.TO.BE.SIGNED"
+                  )}
+                </Text>
+                <br />
+                <Text code>
+                  {responseInfo["sandbox-beforesign"] || "undefined"}
+                </Text>
+              </Paragraph>
+              <Paragraph>
+                <Text strong>
+                  {getIntlContent("SHENYU.DOCUMENT.APIDOC.SIGNATURE")}
+                </Text>
+                <br />
+                <Text code>{responseInfo["sandbox-sign"] || "undefined"}</Text>
+              </Paragraph>
+            </>
+          ) : (
+            <Empty description={false} />
+          )}
+        </TabPane>
+        <TabPane
+          tab={getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.RESULTS")}
+          key="2"
+        >
+          {Object.keys(responseInfo).length ? (
+            <ReactJson src={responseInfo.body} name={false} />
+          ) : (
+            <Empty description={false} />
+          )}
+        </TabPane>
+      </Tabs>
     </>
   );
 }

@@ -36,7 +36,7 @@ function SearchApi(props) {
     return data.map(item => {
       const { children, id, label, key, name } = item;
       const index = label.indexOf(searchValue);
-      const sameName = name === searchValue;
+      const sameName = name?.indexOf(searchValue);
       const beforeStr = label.substr(0, index);
       const afterStr = label.substr(index + searchValue.length);
       let titleObj = <span>{label}</span>;
@@ -49,7 +49,7 @@ function SearchApi(props) {
           </span>
         );
       }
-      if (sameName) {
+      if (searchValue && sameName > -1) {
         titleObj = <span style={{ color: "#f50" }}>{label}</span>;
       }
       return (

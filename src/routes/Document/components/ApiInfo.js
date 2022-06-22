@@ -23,78 +23,6 @@ import { getIntlContent } from "../../../utils/IntlUtils";
 
 const { Title, Text, Paragraph } = Typography;
 
-const columns = [
-  {
-    title: getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"),
-    dataIndex: "name"
-  },
-  {
-    title: getIntlContent("SHENYU.COMMON.TYPE"),
-    dataIndex: "type"
-  },
-  {
-    title: getIntlContent("SHENYU.COMMON.REQUIRED"),
-    dataIndex: "required",
-    render: v =>
-      v ? (
-        <Text type="danger">{getIntlContent("SHENYU.COMMON.YES")}</Text>
-      ) : (
-        getIntlContent("SHENYU.COMMON.NO")
-      )
-  },
-  {
-    title: getIntlContent("SHENYU.COMMON.MAX.LENGTH"),
-    dataIndex: "maxLength"
-  },
-  {
-    title: getIntlContent("SHENYU.PLUGIN.DESCRIBE"),
-    dataIndex: "description"
-  },
-  {
-    title: getIntlContent("SHENYU.COMMON.MAX.EXAMPLE"),
-    dataIndex: "example"
-  }
-];
-
-const defaultCommonData = [
-  {
-    id: 1,
-    name: "code",
-    type: "integer",
-    description: "返回码",
-    example: "200"
-  },
-  {
-    id: 2,
-    name: "message",
-    type: "string",
-    description: "错误描述信息",
-    example: "非法的参数"
-  },
-  {
-    id: 3,
-    name: "data",
-    type: "object",
-    description: "响应的业务结果",
-    example: '{"id":"1988771289091030"}'
-  }
-];
-
-const envPropsColumns = [
-  {
-    title: getIntlContent("SHENYU.COMMON.MAX.ENVIRONMENT"),
-    dataIndex: "envLabel"
-  },
-  {
-    title: getIntlContent("SHENYU.COMMON.TYPE"),
-    dataIndex: "addressLabel"
-  },
-  {
-    title: getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS"),
-    dataIndex: "addressUrl"
-  }
-];
-
 function ApiInfo() {
   const {
     apiData: { envProps = [] },
@@ -106,6 +34,78 @@ function ApiInfo() {
       responseParameters
     }
   } = useContext(ApiContext);
+
+  const columns = [
+    {
+      title: getIntlContent("SHENYU.PLUGIN.SELECTOR.LIST.COLUMN.NAME"),
+      dataIndex: "name"
+    },
+    {
+      title: getIntlContent("SHENYU.COMMON.TYPE"),
+      dataIndex: "type"
+    },
+    {
+      title: getIntlContent("SHENYU.COMMON.REQUIRED"),
+      dataIndex: "required",
+      render: v =>
+        v ? (
+          <Text type="danger">{getIntlContent("SHENYU.COMMON.YES")}</Text>
+        ) : (
+          getIntlContent("SHENYU.COMMON.NO")
+        )
+    },
+    {
+      title: getIntlContent("SHENYU.COMMON.MAX.LENGTH"),
+      dataIndex: "maxLength"
+    },
+    {
+      title: getIntlContent("SHENYU.PLUGIN.DESCRIBE"),
+      dataIndex: "description"
+    },
+    {
+      title: getIntlContent("SHENYU.COMMON.MAX.EXAMPLE"),
+      dataIndex: "example"
+    }
+  ];
+
+  const defaultCommonData = [
+    {
+      id: 1,
+      name: "code",
+      type: "integer",
+      description: "返回码",
+      example: "200"
+    },
+    {
+      id: 2,
+      name: "message",
+      type: "string",
+      description: "错误描述信息",
+      example: "非法的参数"
+    },
+    {
+      id: 3,
+      name: "data",
+      type: "object",
+      description: "响应的业务结果",
+      example: '{"id":"1988771289091030"}'
+    }
+  ];
+
+  const envPropsColumns = [
+    {
+      title: getIntlContent("SHENYU.COMMON.MAX.ENVIRONMENT"),
+      dataIndex: "envLabel"
+    },
+    {
+      title: getIntlContent("SHENYU.COMMON.TYPE"),
+      dataIndex: "addressLabel"
+    },
+    {
+      title: getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS"),
+      dataIndex: "addressUrl"
+    }
+  ];
 
   return (
     <>
