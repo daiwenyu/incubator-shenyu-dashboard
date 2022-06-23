@@ -236,13 +236,16 @@ function ApiDebug() {
     apiDetail: { id }
   } = useContext(ApiContext);
   const [responseInfo, setResponseInfo] = useState({});
+  const [activeKey, setActiveKey] = useState("2");
+
   const formRef = createRef();
 
   const handleSubmit = async values => {
     fetch(sandboxProxyGateway(), {
       method: "POST",
       headers: {
-        "X-Access-Token": sessionStorage.token
+        "X-Access-Token": sessionStorage.token,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(values)
     }).then(async response => {
@@ -261,6 +264,7 @@ function ApiDebug() {
       setResponseInfo({});
       // eslint-disable-next-line no-unused-expressions
       formRef.current?.form.resetFields(["method"]);
+      setActiveKey("2");
     },
     [id]
   );
@@ -268,7 +272,11 @@ function ApiDebug() {
   return (
     <>
       <EnhancedFCForm wrappedComponentRef={formRef} onSubmit={handleSubmit} />
-      <Tabs type="card">
+      <Tabs
+        type="card"
+        activeKey={activeKey}
+        onChange={key => setActiveKey(key)}
+      >
         <TabPane
           tab={getIntlContent(
             "SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.INFORMATION"
