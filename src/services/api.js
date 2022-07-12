@@ -18,7 +18,8 @@
 import { stringify } from "qs";
 import request from "../utils/request";
 
-const baseUrl = document.getElementById("httpPath").innerHTML;
+// const baseUrl = document.getElementById("httpPath").innerHTML;
+const baseUrl = "http://139.199.37.58:9095";
 
 /* add user */
 export async function addUser(params) {
