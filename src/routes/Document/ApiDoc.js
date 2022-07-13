@@ -62,10 +62,6 @@ function ApiDoc() {
 
   useEffect(() => {
     initData();
-    // FIXME
-    handleSelectNode(null, {
-      node: { props: { id: "2edfdb21-43aa-416d-a620-019cfab1977d" } }
-    });
   }, []);
 
   return (

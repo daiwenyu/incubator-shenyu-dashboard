@@ -98,12 +98,12 @@ function ApiInfo() {
       dataIndex: "envLabel"
     },
     {
-      title: getIntlContent("SHENYU.COMMON.TYPE"),
-      dataIndex: "addressLabel"
-    },
-    {
       title: getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS"),
       dataIndex: "addressUrl"
+    },
+    {
+      title: getIntlContent("SHENYU.PLUGIN.DESCRIBE"),
+      dataIndex: "envDesc"
     }
   ];
 

@@ -5,8 +5,6 @@ const { Text } = Typography;
 
 function HeadersEditor(props) {
   const { value, onChange } = props;
-  console.log(value);
-
   const onChangeItem = (e, key, id) => {
     onChange(
       value.map(
@@ -69,7 +67,7 @@ function HeadersEditor(props) {
 
       <Col span={24}>
         <Button block type="dashed" onClick={onAddItem}>
-          <Icon type="plus" /> Add field
+          <Icon type="plus" /> Add header
         </Button>
       </Col>
     </Row>

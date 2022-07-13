@@ -183,8 +183,21 @@ const FCForm = forwardRef(({ form, onSubmit }, ref) => {
 
       <FormItem label="Headers">
         {form.getFieldDecorator("headers", {
-          initialValue: requestHeaders || []
-          // rules: [{ type: "string" }]
+          initialValue: requestHeaders || [],
+          rules: [
+            {
+              validator: (rule, value, callback) => {
+                const errorRow = value.find(
+                  item => item.required && item.example === ""
+                );
+                if (errorRow) {
+                  callback(`${errorRow.name} is required`);
+                } else {
+                  callback();
+                }
+              }
+            }
+          ]
         })(<HeadersEditor />)}
       </FormItem>
 
@@ -283,7 +296,7 @@ function ApiDebug() {
     () => {
       setResponseInfo({});
       // eslint-disable-next-line no-unused-expressions
-      formRef.current?.form.resetFields(["method"]);
+      formRef.current?.form.resetFields(["method", "headers"]);
       setActiveKey("2");
     },
     [id]
