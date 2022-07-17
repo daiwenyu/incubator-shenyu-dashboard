@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Typography, Table, Tabs } from "antd";
+import { Typography, Table, Tabs, Icon } from "antd";
 import React, { useContext } from "react";
 import ApiDebug from "./ApiDebug";
 import ApiContext from "./ApiContext";
@@ -110,43 +110,45 @@ function ApiInfo() {
 
   return (
     <>
-      <Title level={2}>{summary}</Title>
-      <Title level={4}>
-        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.NAME")}
-      </Title>
-      <Text code>{apiName}</Text>
-      <Title level={4}>
-        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.DESCRIPTION")}
-      </Title>
-      <Text type="secondary">{description}</Text>
-      <Title level={4}>
-        {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS")}
-      </Title>
-      <Paragraph>
-        <Table
-          size="small"
-          rowKey="envLabel"
-          bordered
-          dataSource={envProps}
-          pagination={false}
-          columns={envPropsColumns}
-        />
-      </Paragraph>
-
       <Tabs>
         <Tabs.TabPane
-          tab={getIntlContent(
-            "SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.PARAMETERS"
-          )}
+          tab={
+            <>
+              <Icon type="file-text" />
+              {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.DOCUMENT")}
+            </>
+          }
           key="1"
         >
+          <Title level={2}>{summary}</Title>
+          <Title level={4}>
+            {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.ADDRESS")}
+          </Title>
+          <Text code>{apiName}</Text>
+          <Title level={4}>
+            {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.DESCRIPTION")}
+          </Title>
+          <Text type="secondary">{description || "-"}</Text>
+          <Title level={4}>
+            {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.ADDRESS")}
+          </Title>
+          <Paragraph>
+            <Table
+              size="small"
+              rowKey="envLabel"
+              bordered
+              dataSource={envProps}
+              pagination={false}
+              columns={envPropsColumns}
+            />
+          </Paragraph>
           <Title level={2}>
             {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.REQUEST.PARAMETERS")}
           </Title>
 
           <Title level={4}>
             {getIntlContent(
-              "SHENYU.DOCUMENT.APIDOC.INFO.SERVICE.REQUEST.HEADER.PARAMETERS"
+              "SHENYU.DOCUMENT.APIDOC.INFO.SERVICE.REQUEST.HEADERS"
             )}
           </Title>
           <Paragraph>
@@ -214,7 +216,12 @@ function ApiInfo() {
           </Paragraph>
         </Tabs.TabPane>
         <Tabs.TabPane
-          tab={getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.DEBUG")}
+          tab={
+            <>
+              <Icon type="code" />
+              {getIntlContent("SHENYU.DOCUMENT.APIDOC.INFO.INTERFACE.DEBUG")}
+            </>
+          }
           key="2"
         >
           <ApiDebug />
